@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const client = require('../db/db')
 const upload = require('../storage/create-avatar')
+const uuid = require('uuid')
+const fs = require('fs')
 
 router
 .route('')
@@ -59,9 +61,17 @@ router
 .route('/avatar/:id')
 .put( upload.single('avatar'), async (req, res) => {
     try {
+
         const { id } = req.params
-        const { avatar } = req.body
-        await client.query(`UPDATE players SET avatar = $1 WHERE id = $2`, [avatar, id])
+    
+        let fileName = req.file.originalname
+        fileName = uuid.v4()
+
+        fs.rename(req.file.path, `avatars\\${fileName}.jpg`, (err) => {
+            if(err) throw err
+        })
+                
+        await client.query(`UPDATE players SET avatar = $1 WHERE id = $2`, [fileName, id])
         res.json('player avatar updated!')
     } catch (err) {
         console.log(err.message)
