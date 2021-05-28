@@ -26,7 +26,7 @@ router
 // just for practice* get all players from db*
 .get(async (req, res) => {
     try {
-        const allPlayers = await client.query(`SELECT * FROM players`)
+        const allPlayers = await client.query(`SELECT * FROM players ORDER BY id ASC`)
         res.json(allPlayers.rows)
     } catch(err) {
         console.log(err.message)
